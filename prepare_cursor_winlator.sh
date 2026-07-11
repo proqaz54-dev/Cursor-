@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-CURSOR_URL=""
+CURSOR_URL="https://downloader.cursor.sh/windows/nsis/x64"
 WORKDIR="$HOME/cursor-winlator"
 
 print_usage() {
@@ -12,7 +12,7 @@ print_usage() {
 Usage: $0 [--url URL] [--dir PATH]
 
 Options:
-  --url URL   URL на архів або EXE Cursor для Windows
+  --url URL   URL на архів або EXE Cursor для Windows (за замовчуванням: $CURSOR_URL)
   --dir PATH  Каталог для підготовки (за замовчуванням: $WORKDIR)
 EOF
 }
@@ -35,25 +35,35 @@ download_file() {
 prepare_winlator_layout() {
   local dir="$1"
   mkdir -p "$dir"
+
   cat > "$dir/run_cursor.bat" <<'EOF'
 @echo off
 setlocal
 cd /d "%~dp0"
+
+:: Electron-додатки (наприклад, Cursor/VS Code) у Wine потребують відключення пісочниці (--no-sandbox)
+:: та інші специфічні параметри для запуску без збоїв.
+
 if exist "Cursor.exe" (
-  start "Cursor" "Cursor.exe"
+  echo Запуск Cursor.exe з сумісними прапорцями...
+  start "" "Cursor.exe" --no-sandbox --disable-gpu-sandbox --disable-dev-shm-usage %*
+) else if exist "App\Cursor.exe" (
+  echo Запуск App\Cursor.exe...
+  start "" "App\Cursor.exe" --no-sandbox --disable-gpu-sandbox --disable-dev-shm-usage %*
 ) else (
-  echo Cursor.exe not found.
-  echo Put your modified Cursor build in this folder.
-pause
+  echo Cursor.exe не знайдено.
+  echo Будь ласка, переконайтеся, що ви завантажили та розпакували Cursor у цю папку.
+  pause
 )
 EOF
 
   cat > "$dir/README.txt" <<'EOF'
 Cursor for Winlator
 ===================
-1. Помістіть сюди ваш Windows-бінарник Cursor або архів з ним.
-2. Якщо це архів .zip/.7z, розпакуйте його в цю папку.
-3. Запустіть run_cursor.bat у Winlator.
+1. Цей каталог підготовлено для запуску Cursor під Winlator.
+2. Скрипт автоматично завантажив інсталятор і спробував його розпакувати.
+3. Якщо автоматичне розпакування не відбулося, розпакуйте 'CursorSetup.exe' за допомогою 7-Zip (або в самому Winlator за допомогою архіватора).
+4. Запускайте 'run_cursor.bat' у Winlator для запуску з підтримкою сумісних параметрів (без пісочниці).
 EOF
 }
 
@@ -88,14 +98,25 @@ main() {
   prepare_winlator_layout "$WORKDIR"
 
   if [[ -n "$CURSOR_URL" ]]; then
-    local archive="$WORKDIR/cursor_download"
+    local archive="$WORKDIR/CursorSetup.exe"
     download_file "$CURSOR_URL" "$archive"
-    echo "Файл скачано. Розпакуйте його вручну в $WORKDIR"
+
+    if command -v 7z >/dev/null 2>&1; then
+      echo "Знайдено 7z. Починаємо автоматичне розпакування..."
+      7z x "$archive" -o"$WORKDIR" -y || echo "Увага: розпакування завершилося з деякими попередженнями, але файли могли успішно видобутися."
+    elif command -v 7za >/dev/null 2>&1; then
+      echo "Знайдено 7za. Починаємо автоматичне розпакування..."
+      7za x "$archive" -o"$WORKDIR" -y || echo "Увага: розпакування завершилося з деякими попередженнями."
+    else
+      echo "Файл завантажено у $archive."
+      echo "Встановіть p7zip (pkg install p7zip), щоб скрипт автоматично розпакував його наступного разу."
+      echo "Або розпакуйте його вручну безпосередньо у $WORKDIR."
+    fi
   else
     echo "URL не вказано. Підготовлено лише шаблон для Winlator."
   fi
 
-  echo "Готово: $WORKDIR"
+  echo "Готово. Матеріали збережено у: $WORKDIR"
 }
 
 main "$@"
