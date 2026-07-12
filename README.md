@@ -1,29 +1,47 @@
-# Cursor-
+# Cursor on Android / Cursor на Android 🚀
 
-Цей репозиторій містить інструменти для встановлення `Mobox` у Termux та підготовки модифікованої версії `Cursor` для запуску у Winlator.
+Офіційний скрипт для швидкого встановлення та автоматичного налаштування ПК-версії **Cursor** на Android через Termux.
 
-## Файли
+---
 
-- `install_mobox_termux.sh` — завантажує потрібні компоненти Mobox/Termux та запускає офіційний інсталятор.
-- `prepare_cursor_mobox.sh` — створює робочий каталог для адаптації `Cursor` під Mobox.
-- `prepare_cursor_winlator.sh` — створює шаблон папки для запуску модифікованого `Cursor` у Winlator.
-- `termux_auto_bootstrap.sh` — автоматично завантажує скрипти з GitHub у Termux і запускає Mobox-інсталятор.
+## 🇺🇦 Швидкий старт (Українська)
 
-## Як використовувати в Termux
+Скопіюйте та вставте цю команду в Termux, щоб повністю автоматично встановити спеціальний контейнер Ubuntu Linux та Cursor для вашого телефону:
 
-1. Встановіть GitHub-репозиторій у Termux через:
-   `curl -fsSL https://raw.githubusercontent.com/proqaz54-dev/Cursor-/main/termux_auto_bootstrap.sh -o ~/termux_auto_bootstrap.sh && bash ~/termux_auto_bootstrap.sh`
+```bash
+curl -fsSL https://raw.githubusercontent.com/proqaz54-dev/Cursor-/main/install_cursor_android.sh -o ~/install_cursor_android.sh && chmod +x ~/install_cursor_android.sh && bash ~/install_cursor_android.sh
+```
 
-2. Якщо хочете лише підготувати каталог для Cursor під Mobox:
-   `bash ~/.local/bin/prepare_cursor_mobox.sh --repo <URL_репозиторію_Cursor>`
+### Як запустити після встановлення:
+1. Запустіть додаток **Termux-X11** на телефоні.
+2. У Termux запустіть X-сервер:
+   ```bash
+   termux-x11 :1 &
+   ```
+3. Запустіть Cursor командою:
+   ```bash
+   ./run_cursor.sh
+   ```
+4. Поверніться в додаток **Termux-X11** — і користуйтеся нативним, швидким Cursor прямо на вашому Android!
 
-3. Якщо хочете підготувати шаблон для Winlator:
-   `bash ~/.local/bin/prepare_cursor_winlator.sh --dir ~/cursor-winlator`
+---
 
-4. Помістіть у папку Winlator ваш Windows-бінарник Cursor (наприклад `Cursor.exe`) або розпакуйте архів. Потім запускайте `run_cursor.bat` через Winlator.
+## 🇬🇧 Quick Start (English)
 
-## Примітки
+Copy and paste this single command into Termux to automatically install the customized Ubuntu Linux container and native ARM64 Cursor for your Android phone:
 
-- `install_mobox_termux.sh` використовує офіційний інсталятор з репозиторію [olegos2/mobox](https://github.com/olegos2/mobox).
-- Якщо у вас вже встановлено `Termux-X11` та `Input Bridge`, можете запустити: `bash ~/.local/bin/install_mobox_termux.sh --skip-apks`.
-- Для роботи `run-cursor-in-mobox.sh` потрібен вихідний код Cursor або компільований бінарник у цільовому каталозі.
+```bash
+curl -fsSL https://raw.githubusercontent.com/proqaz54-dev/Cursor-/main/install_cursor_android.sh -o ~/install_cursor_android.sh && chmod +x ~/install_cursor_android.sh && bash ~/install_cursor_android.sh
+```
+
+### How to Run:
+1. Open the **Termux-X11** app.
+2. In Termux, start the X-server:
+   ```bash
+   termux-x11 :1 &
+   ```
+3. Launch Cursor:
+   ```bash
+   ./run_cursor.sh
+   ```
+4. Open the **Termux-X11** app to code with native ARM64 desktop Cursor!
